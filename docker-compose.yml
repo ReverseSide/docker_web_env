@@ -6,7 +6,7 @@ services:
       container_name : apachephp7_${Project_Name}
       build: debian_apache_php7
       volumes:
-      - "//D/classeur-virtuel/src/:/var/www/html"
+      - "${Project_path}/${code_path}/:/var/www/html"
       links:
       - mysql
       ports:
@@ -17,7 +17,7 @@ services:
       container_name : apache_${Project_Name}
       image: php:apache
       volumes:
-      - "//D/classeur-virtuel/src/:/var/www/html"
+      - "${Project_path}/${code_path}/:/var/www/html"
       links:
       - mysql
       ports:
@@ -28,7 +28,7 @@ services:
       container_name : mysql_${Project_Name}
       image: mysql:latest
       volumes:
-      - "//D/classeur-virtuel/data/:/var/lib/mysql"
+      - "${Project_path}/${database_path}/:/var/lib/mysql"
       environment:
           MYSQL_ROOT_PASSWORD: passroot
       ports:
