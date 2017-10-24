@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+
+  apachephp7:
+      container_name : apachephp7_${Project_Name}
+      build: debian_apache_php7
+      volumes:
+      - "//D/classeur-virtuel/src/:/var/www/html"
+      links:
+      - mysql
+      ports:
+      - "8090:80"
+      privileged: true
+
+  apache:
+      container_name : apache_${Project_Name}
+      image: php:apache
+      volumes:
+      - "//D/classeur-virtuel/src/:/var/www/html"
+      links:
+      - mysql
+      ports:
+      - "8085:80"
+      privileged: true
+
+  mysql:
+      container_name : mysql_${Project_Name}
+      image: mysql:latest
+      volumes:
+      - "//D/classeur-virtuel/data/:/var/lib/mysql"
+      environment:
+          MYSQL_ROOT_PASSWORD: passroot
+      ports:
+      - "8084:3306"
+      privileged: true
+  phpmyadmin:
+      container_name : phpmyadmin_${Project_Name}
+      image: phpmyadmin/phpmyadmin
+      links:
+      - mysql
+      environment:
+        PMA_HOST: mysql
+        PMA_PORT: 3306
+      ports:
+      - "8083:80"
