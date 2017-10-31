@@ -4,6 +4,7 @@ services:
 
   apachephp7:
       container_name : apachephp7_${Project_Name}
+      hostname: apachephp7_${Project_Name}
       build: debian_apache_php7
       volumes:
       - "${Project_path}/${code_path}/:/var/www/html"
@@ -20,7 +21,8 @@ services:
       - "${Project_path}/${code_path}/:/var/www/html"
       links:
       - mysql
-      ports: - "8085:80"
+      ports:
+      - "8085:80"
       privileged: true
 
   mysql:

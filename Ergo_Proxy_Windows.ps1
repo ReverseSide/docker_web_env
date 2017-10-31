@@ -1,12 +1,7 @@
-﻿[environment]::setEnvironmentVariable('PATH',"$env:path;C:\Windows\System32\WindowsPowerShell\v1.0", 'm')
-
-#cmd commande
-cmd.exe /c "ergo setup windows"
-
-
-#Change proxy address script
+﻿#Change proxy address script
 set-itemproperty -path "hkcu:Software\Microsoft\Windows\CurrentVersion\Internet Settings" -name AutoConfigURL -value "http://127.0.0.1:2000/proxy.pac" -type string
 
+#For to apply changes for the Win Proxy
 refresh-system
 
 
