@@ -10,12 +10,6 @@ try {
     $Connections = $TCPProperties.GetActiveTcpListeners()            
     foreach($Connection in $Connections) {            
         if($Connection.address.AddressFamily -eq "InterNetwork" ) { $IPType = "IPv4" } else { $IPType = "IPv6" }            
-                    
-        $OutputObj = New-Object -TypeName PSobject            
-        $OutputObj | Add-Member -MemberType NoteProperty -Name "LocalAddress" -Value $connection.Address            
-        $OutputObj | Add-Member -MemberType NoteProperty -Name "ListeningPort" -Value $Connection.Port            
-        $OutputObj | Add-Member -MemberType NoteProperty -Name "IPV4Or6" -Value $IPType            
-        $OutputObj   
         
         $array_port_used.Add($Connection.Port)  
     }            
