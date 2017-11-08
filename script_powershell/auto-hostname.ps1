@@ -1,12 +1,20 @@
-﻿Import-module .\check_port.ps1
+﻿Import-module .\script_powershell\check_port.ps1
 
 $linebelow_ports=$false
 $array = @{}
 [System.Collections.ArrayList]$container_name_array = @{}
+[System.Collections.ArrayList]$array_port = @{}
 [int]$port_start=8080
+[int]$cut_line=0
+$AlreayFind=$false
 
-#Create var by reading .env file
+#Create var by reading .env file and delete port part
 Get-Content .env | Foreach-Object{
+   
+   if($_ -like '*Port for each container*' -And $AlreayFind -eq $false ){
+    $cut_line = $_.ReadCount -1
+    $AlreayFind=$true
+   }
    $var = $_.Split('=')
    #If var exist (re)set the value 
    if (Get-Variable -Name $var[0] -ErrorAction SilentlyContinue){
@@ -18,6 +26,11 @@ Get-Content .env | Foreach-Object{
    }
 }
 
+#Delete row after #Port for each container in the .env file
+$content = Get-Content .env -TotalCount $cut_line
+Set-Content -path .env $content
+
+Add-Content -path .env "#Port for each container"
 
 #Count Nomber of Container
 $FileContent = Get-Content "docker-compose.yml"
@@ -30,36 +43,16 @@ $array_port = (Get-FreePorts $port_start $Nb_Container)
 #Parse the YML
 Get-Content docker-compose.yml | ForEach-Object -Begin {} -Process {} -End {}{
 
-    #If port seems to be on the second line
-    if ($linebelow_ports -eq $true){
-        if($_ -like '*-*:*'){
-            #String manipulation for extract port
-            $container_ports = $_.Substring($_.IndexOf('"')+1)
-            $container_ports = $container_ports.Substring(0, $container_ports.IndexOf(":"))
-        }
-        $linebelow_ports = $false
-    }
-
     #If line containe the name of container  
     if ($_ -like '*container_name*'){
          #Recontruct the name of container with .env var
-         $container_name = $_.replace('${Project_Name}',$Project_Name)
-         $container_name = $container_name.Substring($_.IndexOf(':')+1)
+         $container_name = $_.Substring($_.IndexOf(':')+2)
+         $container_name = $container_name.replace('${Project_Name}',"")
+         $container_name = $container_name.Substring(0, $container_name.Length-1)
          $container_name_array.Add($container_name) | Out-Null
-         $port_container = $array_port[$container_name_array.Count -1 ]
+         $container_ports = $array_port[$container_name_array.Count -1 ]
          
-         Add-Content .env $container_name"_port="$port_container
-    }
-    #If line containe ports of container
-    if ($_ -like '*ports*') {
-        if ($_ -like '*-*:*'){
-            $container_ports = $_.Substring($_.IndexOf('"')+1)
-            $container_ports = $container_ports.Substring(0, $container_ports.IndexOf(":"))
-        }
-        else {
-            #If port is not on the same line
-            $linebelow_ports = $true
-        }       
+         Add-Content .env $container_name"_port="$container_ports
     }
 
     if ((![string]::IsNullOrEmpty($container_ports)) -and (![string]::IsNullOrEmpty($container_name))){
@@ -71,16 +64,23 @@ Get-Content docker-compose.yml | ForEach-Object -Begin {} -Process {} -End {}{
  }
 
 
+ #Create or blank the .ergo
  if (!(Test-Path ".ergo"))
 {
    New-Item -name .ergo -type "file"
 }
+else{
+    
+    Clear-Content -path .ergo
 
- Write-Host Write-Host ($array | Out-String) 
+}
 
+ Write-Host ($array | Out-String) 
+
+ #Write the ergo file
  Foreach ($hostdocker in $array.GetEnumerator()){
  
-    $ergoadd = $hostdocker.Name  +" http://localhost:" + $hostdocker.Value
+    $ergoadd = $Project_Name +"_"+ $hostdocker.Name  +" http://localhost:" + $hostdocker.Value
     Add-Content .ergo $ergoadd
 
  }

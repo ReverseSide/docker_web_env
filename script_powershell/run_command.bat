@@ -1,0 +1,6 @@
+﻿@echo off
+docker-compose down
+docker-compose build
+docker-compose up -d
+
+ergo run .ergo

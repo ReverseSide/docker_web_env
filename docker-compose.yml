@@ -11,20 +11,18 @@ services:
       links:
       - mysql
       ports:
-      - "8090:80"
+      - "${apachephp7_port}:80"
       privileged: true
-
   apache:
-      container_name : apache_${Project_Name}
-      image: php:apache
-      volumes:
-      - "${Project_path}/${code_path}/:/var/www/html"
-      links:
-      - mysql
-      ports:
-      - "8085:80"
-      privileged: true
-
+    container_name : apache_${Project_Name}
+    image: php:apache
+    volumes:
+    - "${Project_path}/${code_path}/:/var/www/html"
+    links:
+    - mysql
+    ports:
+    - "${apache_port}:80"
+    privileged: true
   mysql:
       container_name : mysql_${Project_Name}
       image: mysql:latest
@@ -33,7 +31,7 @@ services:
       environment:
           MYSQL_ROOT_PASSWORD: passroot
       ports:
-      - "8084:3306"
+      - "${mysql_port}:3306"
       privileged: true
   phpmyadmin:
       container_name : phpmyadmin_${Project_Name}
@@ -44,4 +42,4 @@ services:
         PMA_HOST: mysql
         PMA_PORT: 3306
       ports:
-      - "8083:80"
+      - "${phpmyadmin_port}:80"

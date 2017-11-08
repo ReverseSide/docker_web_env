@@ -1,4 +1,4 @@
-name_of_project.phpmyadmin http://localhost:8083
-name_of_project.apache http://localhost:8085
-name_of_project.mysql http://localhost:8084
-name_of_project.apachephp7 http://localhost:8090
+name_of_project.apachephp7 http://localhost:8082
+name_of_project.apache http://localhost:8084
+name_of_project.mysql http://localhost:8085
+name_of_project.phpmyadmin http://localhost:8086
